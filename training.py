@@ -1,8 +1,8 @@
 import nltk
 nltk.download('punkt')
 
-def getSpeeches():
-    f=open('Assignment1_resources/train/obama.txt','rt')
+def getSpeeches(path1,path2):
+    f=open(path1,'rt')
     raw = f.read()
     split = raw.split("\n")
     obama = []
@@ -12,7 +12,7 @@ def getSpeeches():
         obama.append(obamaTokens)
     f.close()
 
-    f=open('Assignment1_resources/train/trump.txt','rt')
+    f=open(path2,'rt')
     raw = f.read()
     split = raw.split("\n")
     trump = []
@@ -50,7 +50,7 @@ def cleanText(tokens):
     return result
 
 def main():
-    (obama,trump) = getSpeeches();
+    (obama,trump) = getSpeeches('Assignment1_resources/train/obama.txt','Assignment1_resources/train/trump.txt');
     print(trump[2])
 
 
