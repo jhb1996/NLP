@@ -69,12 +69,12 @@ def _bigram_cnt_full_dict(doc_lst, unigram_cnt_dict):
             bi = str((t1, t2))
             if bi not in dTup:
                 dTup[bi]=0
-            if t1 in dNest: # if it + the next entry is in the dictionary inc the val
-                innerDict = dNest[t1]
-                innerDict[t2] = 0
-            else:
-                dNest[t1]={}
-                dNest[t1][t2]=0
+                if t1 in dNest: # if it + the next entry is in the dictionary inc the val
+                    innerDict = dNest[t1]
+                    innerDict[t2] = 0
+                else:
+                    dNest[t1]={}
+                    dNest[t1][t2]=0
     return dTup, dNest
 
 def compute_unigram_prob_dict(dCount):
@@ -123,7 +123,7 @@ def compute_bigram_prob_dict(uni_dCount, bi_dCount_Nest):
 
 def trainDocLst(doc_lst):
     print('running ngram_calculator')
-    #doc_tup = getSpeeches()
+    #doc_tup = getSpeeches('../Assignment1_resources/train/obama.txt','../Assignment1_resources/train/trump.txt')
     # print (doc_lst)
     #print('got speeches')
 
@@ -145,17 +145,17 @@ def trainDocLst(doc_lst):
 
 
 def trainTrump():
-    doc_lsts = getSpeeches()
+    doc_lsts = getSpeeches('../Assignment1_resources/train/obama.txt','../Assignment1_resources/train/trump.txt')
     T_unigram_cnt_dict, T_unigram_prob_dict, T_bigram_cnt_dict_tup, T_bigram_cnt_dict_nest, T_bigram_prob_dict = trainDocLst(doc_lsts[1])
     return     T_unigram_cnt_dict, T_unigram_prob_dict, T_bigram_cnt_dict_tup, T_bigram_cnt_dict_nest, T_bigram_prob_dict
 
 def trainObama():
-    doc_lsts = getSpeeches()
+    doc_lsts = getSpeeches('../Assignment1_resources/train/obama.txt','../Assignment1_resources/train/trump.txt')
     O_unigram_cnt_dict, O_unigram_prob_dict, O_bigram_cnt_dict_tup, O_bigram_cnt_dict_nest, O_bigram_prob_dict = trainDocLst(doc_lsts[1])
     return     O_unigram_cnt_dict, O_unigram_prob_dict, O_bigram_cnt_dict_tup, O_bigram_cnt_dict_nest, O_bigram_prob_dict
 
 def trainBoth():
-    doc_lst = getSpeeches()
+    doc_lst = getSpeeches('../Assignment1_resources/train/obama.txt','../Assignment1_resources/train/trump.txt')
     #doc_lst = [[['security', '...', 'but', 'i', 'heard', 'it'], ['.', 'i', 'read', 'it', 'i', 'heard', 'it', 'ing']],[['security', '...', 'but', 'i', 'heard', 'it'], ['.', 'i', 'read', 'it', 'i', 'heard', 'it', 'ing']]]#hardcoded temp
 
     T_unigram_cnt_dict, T_unigram_prob_dict, T_bigram_cnt_dict_tup, T_bigram_cnt_dict_nest, T_bigram_prob_dict = trainDocLst(doc_lst[1])
@@ -165,50 +165,60 @@ def trainBoth():
     return T_unigram_cnt_dict, T_unigram_prob_dict, T_bigram_cnt_dict_tup, T_bigram_cnt_dict_nest, T_bigram_prob_dict, \
             O_unigram_cnt_dict, O_unigram_prob_dict, O_bigram_cnt_dict_tup, O_bigram_cnt_dict_nest, O_bigram_prob_dict
 
-# def generate_random ():
+def saveFullDictsTrump():
+    doc_lst_T = getSpeeches('../Assignment1_resources/train/trump.txt')
+    saveFullDicts(doc_lst_T)
 
-if __name__ == '__main__':
-    # T_unigram_cnt_dict, T_unigram_prob_dict, T_bigram_cnt_dict_tup, T_bigram_cnt_dict_nest, T_bigram_prob_dict = trainTrump()
-    # print('starting to output to jsons');
-    # with open('T_unigram_cnt_dict.json', 'w') as outfile:
-    #     json.dump(T_unigram_cnt_dict, outfile, sort_keys=True, indent=4,
-    #               ensure_ascii=False)
-    #
-    # with open('T_unigram_prob_dict.json', 'w') as outfile:
-    #     json.dump(T_unigram_prob_dict, outfile, sort_keys=True, indent=4,
-    #               ensure_ascii=False)
-    #
-    # with open('T_bigram_cnt_dict_tup.json', 'w') as outfile:
-    #     json.dump(T_bigram_cnt_dict_tup, outfile, sort_keys=True, indent=4,
-    #               ensure_ascii=False)
-    #
-    # with open('T_bigram_cnt_dict_nest.json', 'w') as outfile:
-    #     json.dump(T_bigram_cnt_dict_nest, outfile, sort_keys=True, indent=4,
-    #               ensure_ascii=False)
-    #
-    # with open('T_bigram_cnt_dict_nest.json', 'w') as outfile:
-    #     json.dump(T_bigram_cnt_dict_nest, outfile, sort_keys=True, indent=4,
-    #               ensure_ascii=False)
-    #
-    # with open('T_bigram_prob_dict.json', 'w') as outfile:
-    #     json.dump(T_bigram_prob_dict, outfile, sort_keys=True, indent=4,
-    #               ensure_ascii=False)
-    # print('finished outputting trump to json');
+def saveFullDictsObama():
+    doc_lst_O = getSpeeches('../Assignment1_resources/train/obama.txt')
+    saveFullDicts(doc_lst_O)
 
-    doc_lst_T = getSpeeches('../Assignment1_resources/train/obama.txt','../Assignment1_resources/train/trump.txt')[1]
-    #doc_lst_T = [['security', '...', 'but', 'i', 'heard', 'it'], ['.', 'i', 'read', 'it', 'i', 'heard', 'it', 'ing']]#hardcoded temp
-
-    unigram_cnt_dict = _unigram_cnt_dict(doc_lst_T)
+def saveFullDicts(doc_lst):
+    unigram_cnt_dict = _unigram_cnt_dict(doc_lst)
     print('generating bigram full');
-    T_bigram_cnt_full_dict_tup, T_bigram_cnt_full_dict_nest = _bigram_cnt_full_dict(doc_lst_T, unigram_cnt_dict)
+    T_bigram_cnt_full_dict_tup, T_bigram_cnt_full_dict_nest = _bigram_cnt_full_dict(doc_lst, unigram_cnt_dict)
     print('starting write');
     with open('T_bigram_cnt_full_dict_tup.json', 'w') as outfile:
         json.dump(T_bigram_cnt_full_dict_tup, outfile, sort_keys=True, indent=4,
                   ensure_ascii=False)
+    print('finished writing full Trump dict')
 
-    with open('T_bigram_cnt_full_dict_nest.json', 'w') as outfile:
-        json.dump(T_bigram_cnt_full_dict_nest, outfile, sort_keys=True, indent=4,
+def runAndSaveTrump():
+    T_unigram_cnt_dict, T_unigram_prob_dict, T_bigram_cnt_dict_tup, T_bigram_cnt_dict_nest, T_bigram_prob_dict = trainTrump()
+    print('starting to output to jsons');
+    with open('T_unigram_cnt_dict.json', 'w') as outfile:
+        json.dump(T_unigram_cnt_dict, outfile, sort_keys=True, indent=4,
                   ensure_ascii=False)
+
+    with open('T_unigram_prob_dict.json', 'w') as outfile:
+        json.dump(T_unigram_prob_dict, outfile, sort_keys=True, indent=4,
+                  ensure_ascii=False)
+
+    with open('T_bigram_cnt_dict_tup.json', 'w') as outfile:
+        json.dump(T_bigram_cnt_dict_tup, outfile, sort_keys=True, indent=4,
+                  ensure_ascii=False)
+
+    with open('T_bigram_cnt_dict_nest.json', 'w') as outfile:
+        json.dump(T_bigram_cnt_dict_nest, outfile, sort_keys=True, indent=4,
+                  ensure_ascii=False)
+
+    with open('T_bigram_cnt_dict_nest.json', 'w') as outfile:
+        json.dump(T_bigram_cnt_dict_nest, outfile, sort_keys=True, indent=4,
+                  ensure_ascii=False)
+
+    with open('T_bigram_prob_dict.json', 'w') as outfile:
+        json.dump(T_bigram_prob_dict, outfile, sort_keys=True, indent=4,
+                  ensure_ascii=False)
+    print('finished outputting trump to json');
+
+if __name__ == '__main__':
+    #runAndSaveTrump()
+    saveFullDictsTrump()
+    saveFullDictsObama()
+
+
+
+
 #################
     # with open('O_unigram_cnt_dict.json', 'w') as outfile:
     #     json.dump(O_unigram_cnt_dict, outfile, sort_keys=True, indent=4,
