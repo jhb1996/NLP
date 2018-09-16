@@ -60,20 +60,31 @@ def fromBigramSeed(seed,bigram,unigram):
     return sentance
 
 def main():
+    print("running randomOutput main")
+    print("creating bigram probabilities from json")
+
     f=open('T_bigram_prob_dict.json')
     data = json.load(f)
     bigram = {}
     for tup in list(data.keys()):
         bigram[make_tuple(tup)] = data[tup]
 
+    print("creating unigram probabilities from json")
     f=open('T_unigram_prob_dict.json')
     unigram = json.load(f)
+    f.close()
 
-    print("\n")
-    print("----Senetance generated from Unigram ---------")
-    print(fromUnigram(unigram) + '\n')
-    print("----Senetance generated from Bigram ---------")
-    print(fromBigram(bigram,unigram)  + '\n')
+    print("writing to output")
+    f = open("sentanceGeneratedOutput.txt","w+")
+    f.write("----Sentances generated from Unigram ---------\n\n")
+    for i in range(20):
+        f.write(fromUnigram(unigram) + '\n\n')
+    f.write("----Sentances generated from Bigram ---------\n\n")
+    for i in range(20):
+        f.write(fromBigram(bigram,unigram)  + '\n\n')
+    f.close()
+
+    print("done writing to output")
 
 if __name__ == "__main__":
     main()
