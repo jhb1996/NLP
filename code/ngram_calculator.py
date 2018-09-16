@@ -110,13 +110,13 @@ def trainDocLst(doc_lst):
 
 def trainTrump():
     doc_lsts = getSpeeches()
-    unigram_cnt_dict, unigram_prob_dict, bigram_cnt_dict_tup, bigram_cnt_dict_nest, bigram_prob_dict = trainDocLst(doc_lsts[1])
-    return unigram_cnt_dict, unigram_prob_dict, bigram_cnt_dict_tup, bigram_cnt_dict_nest, bigram_prob_dict
+    T_unigram_cnt_dict, T_unigram_prob_dict, T_bigram_cnt_dict_tup, T_bigram_cnt_dict_nest, T_bigram_prob_dict = trainDocLst(doc_lsts[1])
+    return     T_unigram_cnt_dict, T_unigram_prob_dict, T_bigram_cnt_dict_tup, T_bigram_cnt_dict_nest, T_bigram_prob_dict
 
 def trainObama():
     doc_lsts = getSpeeches()
-    unigram_cnt_dict, unigram_prob_dict, bigram_cnt_dict_tup, bigram_cnt_dict_nest, bigram_prob_dict = trainDocLst(doc_lsts[0])
-    return unigram_cnt_dict, unigram_prob_dict, bigram_cnt_dict_tup, bigram_cnt_dict_nest, bigram_prob_dict
+    O_unigram_cnt_dict, O_unigram_prob_dict, O_bigram_cnt_dict_tup, O_bigram_cnt_dict_nest, O_bigram_prob_dict = trainDocLst(doc_lsts[1])
+    return     O_unigram_cnt_dict, O_unigram_prob_dict, O_bigram_cnt_dict_tup, O_bigram_cnt_dict_nest, O_bigram_prob_dict
 
 def trainBoth():
     doc_lst = getSpeeches()
@@ -164,8 +164,8 @@ if __name__ == '__main__':
     #
     #
     # print('done')
-    T_unigram_cnt_dict, T_unigram_prob_dict, T_bigram_cnt_dict_tup, T_bigram_cnt_dict_nest, T_bigram_prob_dict, O_unigram_cnt_dict, O_unigram_prob_dict, O_bigram_cnt_dict_tup, O_bigram_cnt_dict_nest, O_bigram_prob_dict = trainBoth()
-
+    # T_unigram_cnt_dict, T_unigram_prob_dict, T_bigram_cnt_dict_tup, T_bigram_cnt_dict_nest, T_bigram_prob_dict, O_unigram_cnt_dict, O_unigram_prob_dict, O_bigram_cnt_dict_tup, O_bigram_cnt_dict_nest, O_bigram_prob_dict = trainBoth()
+    T_unigram_cnt_dict, T_unigram_prob_dict, T_bigram_cnt_dict_tup, T_bigram_cnt_dict_nest, T_bigram_prob_dict = trainTrump()
     print('starting to output to jsons');
     with open('T_unigram_cnt_dict.json', 'w') as outfile:
         json.dump(T_unigram_cnt_dict, outfile, sort_keys=True, indent=4,
@@ -192,29 +192,29 @@ if __name__ == '__main__':
                   ensure_ascii=False)
     print('finished outputting trump to json');
 #################
-    with open('O_unigram_cnt_dict.json', 'w') as outfile:
-        json.dump(O_unigram_cnt_dict, outfile, sort_keys=True, indent=4,
-                  ensure_ascii=False)
-
-    with open('O_unigram_prob_dict.json', 'w') as outfile:
-        json.dump(O_unigram_prob_dict, outfile, sort_keys=True, indent=4,
-                  ensure_ascii=False)
-
-    with open('O_bigram_cnt_dict_tup.json', 'w') as outfile:
-        json.dump(O_bigram_cnt_dict_tup, outfile, sort_keys=True, indent=4,
-                  ensure_ascii=False)
-
-    with open('O_bigram_cnt_dict_nest.json', 'w') as outfile:
-        json.dump(O_bigram_cnt_dict_nest, outfile, sort_keys=True, indent=4,
-                  ensure_ascii=False)
-
-    with open('O_bigram_cnt_dict_nest.json', 'w') as outfile:
-        json.dump(O_bigram_cnt_dict_nest, outfile, sort_keys=True, indent=4,
-                  ensure_ascii=False)
-
-    with open('O_bigram_prob_dict.json', 'w') as outfile:
-        json.dump(O_bigram_prob_dict, outfile, sort_keys=True, indent=4,
-                  ensure_ascii=False)
+    # with open('O_unigram_cnt_dict.json', 'w') as outfile:
+    #     json.dump(O_unigram_cnt_dict, outfile, sort_keys=True, indent=4,
+    #               ensure_ascii=False)
+    #
+    # with open('O_unigram_prob_dict.json', 'w') as outfile:
+    #     json.dump(O_unigram_prob_dict, outfile, sort_keys=True, indent=4,
+    #               ensure_ascii=False)
+    #
+    # with open('O_bigram_cnt_dict_tup.json', 'w') as outfile:
+    #     json.dump(O_bigram_cnt_dict_tup, outfile, sort_keys=True, indent=4,
+    #               ensure_ascii=False)
+    #
+    # with open('O_bigram_cnt_dict_nest.json', 'w') as outfile:
+    #     json.dump(O_bigram_cnt_dict_nest, outfile, sort_keys=True, indent=4,
+    #               ensure_ascii=False)
+    #
+    # with open('O_bigram_cnt_dict_nest.json', 'w') as outfile:
+    #     json.dump(O_bigram_cnt_dict_nest, outfile, sort_keys=True, indent=4,
+    #               ensure_ascii=False)
+    #
+    # with open('O_bigram_prob_dict.json', 'w') as outfile:
+    #     json.dump(O_bigram_prob_dict, outfile, sort_keys=True, indent=4,
+    #               ensure_ascii=False)
 
     print('finished outputing to jsons');
 
