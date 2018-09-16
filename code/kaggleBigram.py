@@ -1,4 +1,5 @@
 import csv
+import json
 from training import getSpeeches
 import nltk
 
@@ -10,7 +11,7 @@ import nltk
 # def validate():
 
 
-def getProbOandT(t1,t2):
+def getProbOandT(t1,t2,O_bigram_prob_dict,T_bigram_prob_dict):
     bi = str((t1,t2))
     if bi in T_bigram_prob_dict_smooth:
         prob_T = T_bigram_prob_dict_smooth[bi]
@@ -23,11 +24,11 @@ def getProbOandT(t1,t2):
         print('TODO')
 
 # Takes a string and output a 0 (obama) or a 1 (trump).
-def classify(tokens):
+def classify(tokens,O_bigram_prob_dict,T_bigram_prob_dict):
     for i in range (len(tokens)):
         t1 = tokens[i]
         t2 = tokens[i+1]
-        prob_O,prob_T = getProbOandT(t1,t2)
+        prob_O,prob_T = getProbOandT(t1,t2, O_bigram_prob_dict,T_bigram_prob_dict)
 
         #print(tokens)
     return 1
@@ -59,6 +60,14 @@ def cleanText(tokens):
 
 def output():
     pred_lst = []
+    print('reading in Obama bi prob dict')
+    with open('smoothed_T_bigram_cnt_dict_tup.json', 'w') as outfile:
+        json.dump(smoothed_T_bigram_cnt, outfile, sort_keys=True, indent=4,
+                  ensure_ascii=False)
+    print('reading in Trump bi prob dict')
+    with open('O_bigram_cnt_full_dict_tup.json', 'r') as f:
+        O_bigram_cnt_full_dict_tup = json.load(f)
+    print('Done reading in prob dicts')
     testFile = open('../Assignment1_resources/test/test.txt','rt')
     raw = testFile.read()
     split = raw.split("\n")
@@ -66,7 +75,7 @@ def output():
         tokens = nltk.word_tokenize(paragraph)
         tokens = cleanText(tokens)
         #classify the tokens
-        pred = classify(tokens)
+        pred = classify(tokens, O_bigram_prob_dict, T_bigram_prob_dict)
         pred_lst.append((i,pred))
         #append to a list
     testFile.close()
@@ -74,7 +83,7 @@ def output():
     print ('finished generating predictions')
     print('preds:', pred_lst)
 
-    with open('predictionss.csv', mode='w') as predictions_file:
+    with open('predictions.csv', mode='w') as predictions_file:
         writer = csv.writer(predictions_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
         writer.writerow(['Id','Prediction'])
