@@ -47,20 +47,45 @@ def fromBigramSeed(seed,bigram,unigram):
             sentance+=("\b"+genWord[0])
         else:
             sentance+=(genWord[0] + " ")
-
      #test sum
     #test = {}
     #for listKey in list(dist.keys()):
     #    li = dist[listKey]
     #    test[listKey] = 0;
-    #   for word in list(li.keys()):
-    #       test[listKey] = (test[listKey] + li[word])
+    #    for word in list(li.keys()):
+    #        test[listKey] = (test[listKey] + li[word])
     #print (test)
 
     return sentance
 
-def main():
-    print("running randomOutput main")
+def genObamaSentances():
+    print("creating bigram probabilities from json")
+
+    f=open('O_bigram_prob_dict.json')
+    data = json.load(f)
+    bigram = {}
+    for tup in list(data.keys()):
+        bigram[make_tuple(tup)] = data[tup]
+
+    print("creating unigram probabilities from json")
+    f=open('O_unigram_prob_dict.json')
+    unigram = json.load(f)
+    f.close()
+
+    print("writing to output")
+    f = open("ObamaSentanceGeneratedOutput.txt","w+")
+    f.write("----Sentances generated from Unigram for Obama---------\n\n")
+    for i in range(200):
+        f.write(fromUnigram(unigram) + '\n\n')
+    f.write("----Sentances generated from Bigram for Obama---------\n\n")
+    for i in range(200):
+        f.write(fromBigram(bigram,unigram)  + '\n\n')
+    fromBigram(bigram,unigram)
+    f.close()
+
+    print("done writing to output")
+
+def genTrumpSentances():
     print("creating bigram probabilities from json")
 
     f=open('T_bigram_prob_dict.json')
@@ -75,16 +100,22 @@ def main():
     f.close()
 
     print("writing to output")
-    f = open("sentanceGeneratedOutput.txt","w+")
-    f.write("----Sentances generated from Unigram ---------\n\n")
-    for i in range(20):
+    f = open("TrumpSentanceGeneratedOutput.txt","w+")
+    f.write("----Sentances generated from Unigram for Trump---------\n\n")
+    for i in range(200):
         f.write(fromUnigram(unigram) + '\n\n')
-    f.write("----Sentances generated from Bigram ---------\n\n")
-    for i in range(20):
+    f.write("----Sentances generated from Bigram for Trump---------\n\n")
+    for i in range(200):
         f.write(fromBigram(bigram,unigram)  + '\n\n')
+    fromBigram(bigram,unigram)
     f.close()
 
     print("done writing to output")
+
+def main():
+    print("running randomOutput main")
+    genObamaSentances()
+    genTrumpSentances()
 
 if __name__ == "__main__":
     main()

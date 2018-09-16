@@ -1,5 +1,7 @@
 import training
 import math
+import json
+from ast import literal_eval as make_tuple
 
 def unigramPerplexity(unigram,speech):
 	count = 0
@@ -7,6 +9,8 @@ def unigramPerplexity(unigram,speech):
 
 	for paragraph in speech:
 		for word in paragraph:
+			print(word)
+			print(unigram[word])
 			prob += (math.log(unigram[word])*(-1))
 			count += 1
 
@@ -19,7 +23,7 @@ def bigramPerplexity(bigram,speech):
 	for paragraph in speech:
 		prevWord = ''
 		for word in paragraph:
-			if(prevWord = ''):
+			if(prevWord == ''):
 				prob += 0
 				prevWord = word
 				count += 1
@@ -33,9 +37,22 @@ def bigramPerplexity(bigram,speech):
 
 
 def main():
-    (obama,trump) = training.getSpeeches('Assignment1_resources/development/obama.txt','Assignment1_resources/development/trump.txt');
-    print(trump)
+    (obama,trump) = training.getSpeeches('../Assignment1_resources/development/obama.txt','../Assignment1_resources/development/trump.txt');
+    
+    print("creating bigram probabilities from json")
 
+    f=open('T_bigram_prob_dict.json')
+    data = json.load(f)
+    bigram = {}
+    for tup in list(data.keys()):
+        bigram[make_tuple(tup)] = data[tup]
+
+    print("creating unigram probabilities from json")
+    f=open('T_unigram_prob_dict.json')
+    unigram = json.load(f)
+    f.close()
+
+    print(unigramPerplexity(unigram,obama))
 
 if __name__ == "__main__":
     main()
