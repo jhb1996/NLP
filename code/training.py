@@ -13,7 +13,7 @@ from ngram_dict_reader import read_in_dicts
 # nltk.download('punkt')
 #nltk.download('punkt')
 
-def getSpeeches(path1,path2):
+def getSpeeches(path1,path2=None):
     f=open(path1,'rt')
     raw = f.read()
     split = raw.split("\n")
@@ -24,15 +24,19 @@ def getSpeeches(path1,path2):
         obama.append(obamaTokens)
     f.close()
 
-    f=open(path2,'rt')
-    raw = f.read()
-    split = raw.split("\n")
-    trump = []
-    for paragraph in split:
-        trumpTokens = nltk.word_tokenize(paragraph)
-        trumpTokens = cleanText(trumpTokens)
-        trump.append(trumpTokens)
-    f.close()
+    #if running on test data path2 will=null
+    if path2 != None:
+        f=open(path2,'rt')
+        raw = f.read()
+        split = raw.split("\n")
+        trump = []
+        for paragraph in split:
+            trumpTokens = nltk.word_tokenize(paragraph)
+            trumpTokens = cleanText(trumpTokens)
+            trump.append(trumpTokens)
+        f.close()
+    else:
+        return obama
 
     return (obama,trump);
 

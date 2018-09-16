@@ -66,10 +66,29 @@ table2={
     }
 '''
 
-with open('T_bigram_cnt_full_dict_tup.json') as f:
-    x=f.read()
-    data=json.loads(x)
+# with open('T_bigram_cnt_full_dict_tup.json') as f:
+#     x=f.read()
+#     data=json.loads(x)
+#
+# gtSmoothing(data)
 
-gtSmoothing(data)
 
-
+if __name__ == "__main__":
+    print('reading Trump json')
+    with open('T_bigram_cnt_full_dict_tup.json', 'r') as f:
+        T_bigram_cnt_full_dict_tup = json.load(f)
+    print('finished reading in T_bigram_cnt_full_dict_tup.json');
+    smoothed_T_bigram_cnt = gtSmoothing(T_bigram_cnt_full_dict_tup)
+    print('finished calculating smoothed_T_bigram_cnt');
+    with open('smoothed_T_bigram_cnt_dict_tup.json', 'w') as outfile:
+        json.dump(smoothed_T_bigram_cnt, outfile, sort_keys=True, indent=4,
+                  ensure_ascii=False)
+    print('finished Obama')
+    with open('O_bigram_cnt_full_dict_tup.json', 'r') as f:
+        O_bigram_cnt_full_dict_tup = json.load(f)
+    print('finished reading in O_bigram_cnt_full_dict_tup.json');
+    smoothed_O_bigram_cnt = gtSmoothing(O_bigram_cnt_full_dict_tup)
+    print('finished calculating smoothed_O_bigram_cnt');
+    with open('smoothed_O_bigram_cnt_dict_tup.json', 'w') as outfile:
+        json.dump(smoothed_T_bigram_cnt, outfile, sort_keys=True, indent=4,
+                  ensure_ascii=False)
