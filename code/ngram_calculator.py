@@ -166,20 +166,23 @@ def trainBoth():
             O_unigram_cnt_dict, O_unigram_prob_dict, O_bigram_cnt_dict_tup, O_bigram_cnt_dict_nest, O_bigram_prob_dict
 
 def saveFullDictsTrump():
-    doc_lst_T = getSpeeches('../Assignment1_resources/train/trump.txt')
-    saveFullDicts(doc_lst_T)
+    saveFullDicts('T')
 
 def saveFullDictsObama():
-    doc_lst_O = getSpeeches('../Assignment1_resources/train/obama.txt')
-    saveFullDicts(doc_lst_O)
+    saveFullDicts('O')
 
-def saveFullDicts(doc_lst):
+def saveFullDicts(TorO):
+    if TorO=='O':
+        f_name = 'obama.txt'
+    else:
+        f_name = 'trump.txt'
+    doc_lst = getSpeeches('../Assignment1_resources/train/'+f_name)
     unigram_cnt_dict = _unigram_cnt_dict(doc_lst)
     print('generating bigram full');
-    T_bigram_cnt_full_dict_tup, T_bigram_cnt_full_dict_nest = _bigram_cnt_full_dict(doc_lst, unigram_cnt_dict)
+    bigram_cnt_full_dict_tup, bigram_cnt_full_dict_nest = _bigram_cnt_full_dict(doc_lst, unigram_cnt_dict)
     print('starting write');
-    with open('T_bigram_cnt_full_dict_tup.json', 'w') as outfile:
-        json.dump(T_bigram_cnt_full_dict_tup, outfile, sort_keys=True, indent=4,
+    with open(TorO+'_bigram_cnt_full_dict_tup.json', 'w') as outfile:
+        json.dump(bigram_cnt_full_dict_tup, outfile, sort_keys=True, indent=4,
                   ensure_ascii=False)
     print('finished writing full Trump dict')
 
