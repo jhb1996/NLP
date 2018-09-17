@@ -80,15 +80,20 @@ if __name__ == "__main__":
     print('finished reading in T_bigram_cnt_full_dict_tup.json');
     smoothed_T_bigram_cnt = gtSmoothing(T_bigram_cnt_full_dict_tup)
     print('finished calculating smoothed_T_bigram_cnt');
+    print('writing smoothed_T_bigram_cnt to a json');
     with open('smoothed_T_bigram_cnt_dict_tup.json', 'w') as outfile:
         json.dump(smoothed_T_bigram_cnt, outfile, sort_keys=True, indent=4,
                   ensure_ascii=False)
-    print('finished Obama')
+    print('finished Trump');
+    print('reading in Obama O_bigram_cnt_full_dict_tup.json');
     with open('O_bigram_cnt_full_dict_tup.json', 'r') as f:
         O_bigram_cnt_full_dict_tup = json.load(f)
     print('finished reading in O_bigram_cnt_full_dict_tup.json');
+    print('calculating obama')
     smoothed_O_bigram_cnt = gtSmoothing(O_bigram_cnt_full_dict_tup)
     print('finished calculating smoothed_O_bigram_cnt');
+    print('writing calculating smoothed_O_bigram_cnt')
     with open('smoothed_O_bigram_cnt_dict_tup.json', 'w') as outfile:
         json.dump(smoothed_T_bigram_cnt, outfile, sort_keys=True, indent=4,
                   ensure_ascii=False)
+    print('DONE!')
