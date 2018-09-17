@@ -12,9 +12,16 @@ def _unigram_cnt_dict(doc_lst):
                     d[t]+=1
             else:
                 d[t]=1
-    return d
+    #change any string appearing less than once to a '<unk>'
+    d_w_Unknowns = {'<unk>':0};
+    for key in d:
+        if d[key]>=2:
+            d_w_Unknowns[key]=d[key]
+        else:
+            d_w_Unknowns['<unk>']+=1
+    return d_w_Unknowns
 
-def _bigram_cnt_dict(doc_lst):
+def _bigram_cnt_dict(doc_lst, unigram_cnt_dict):
     #assumes all tokens are relavent
     dTup = {};
     dNest = {};
@@ -22,6 +29,9 @@ def _bigram_cnt_dict(doc_lst):
         for i in range(len(doc)-1):
             t1 = doc[i]
             t2 = doc[i+1]
+            if t1 not in unigram_cnt_dict: t1 = '<unk>'
+            if t2 not in unigram_cnt_dict: t2 = '<unk>'
+
             bi = str((t1, t2)) #create a bigram using underscores
             if bi in dTup: # if it + the next entry is in the dictionary inc the val
                 dTup[bi]+=1
@@ -48,34 +58,38 @@ def _bigram_cnt_full_dict(doc_lst, unigram_cnt_dict):
         for i in range(len(doc)-1):
             t1 = doc[i]
             t2 = doc[i+1]
+            if t1 not in unigram_cnt_dict: t1 = '<unk>'
+            if t2 not in unigram_cnt_dict: t2 = '<unk>'
             bi = str((t1, t2)) #create a bigram using underscores
             if bi in dTup: # if it + the next entry is in the dictionary inc the val
                 dTup[bi]+=1
             else:
                 dTup[bi]=1
 
-            if t1 in dNest: # if it + the next entry is in the dictionary inc the val
-                innerDict = dNest[t1]
-                if t2 in innerDict:
-                    innerDict[t2]+=1
-                else:
-                    innerDict[t2] = 1
-            else:
-                dNest[t1]={}
-                dNest[t1][t2]=1
+            # if t1 in dNest: # if it + the next entry is in the dictionary inc the val
+            #     innerDict = dNest[t1]
+            #     if t2 in innerDict:
+            #         innerDict[t2]+=1
+            #     else:
+            #         innerDict[t2] = 1
+            # else:
+            #     dNest[t1]={}
+            #     dNest[t1][t2]=1
 
     for t1 in unigram_cnt_dict:
         for t2 in unigram_cnt_dict:
+            if t1 not in unigram_cnt_dict: t1 = '<unk>'
+            if t2 not in unigram_cnt_dict: t2 = '<unk>'
             bi = str((t1, t2))
             if bi not in dTup:
                 dTup[bi]=0
-                if t1 in dNest: # if it + the next entry is in the dictionary inc the val
-                    innerDict = dNest[t1]
-                    innerDict[t2] = 0
-                else:
-                    dNest[t1]={}
-                    dNest[t1][t2]=0
-    return dTup, dNest
+                # if t1 in dNest: # if it + the next entry is in the dictionary inc the val
+                #     innerDict = dNest[t1]
+                #     innerDict[t2] = 0
+                # else:
+                #     dNest[t1]={}
+                #     dNest[t1][t2]=0
+    return dTup#, dNest
 
 def compute_unigram_prob_dict(dCount):
     dProb = {}
@@ -136,7 +150,7 @@ def trainDocLst(doc_lst):
     unigram_prob_dict = compute_unigram_prob_dict(unigram_cnt_dict)
     # print ('compute_unigram_prob_dict', unigram_prob_dict)
 
-    bigram_cnt_dict_tup,  bigram_cnt_dict_nest = _bigram_cnt_dict(doc_lst)
+    bigram_cnt_dict_tup,  bigram_cnt_dict_nest = _bigram_cnt_dict(doc_lst, unigram_cnt_dict)
     #print ('bigram_cnt_dict_nest', bigram_cnt_dict_nest)
     print ('calculating bigram probabilities')
     bigram_prob_dict = compute_bigram_prob_dict(unigram_cnt_dict, bigram_cnt_dict_nest)
@@ -178,7 +192,7 @@ def saveFullDicts(TorO):
         f_name = 'trump.txt'
     doc_lst = getSpeeches('../Assignment1_resources/train/'+f_name)
     unigram_cnt_dict = _unigram_cnt_dict(doc_lst)
-    print('generating bigram full');
+    print('generating bigram full'+f_name);
     bigram_cnt_full_dict_tup, bigram_cnt_full_dict_nest = _bigram_cnt_full_dict(doc_lst, unigram_cnt_dict)
     print('starting write');
     with open(TorO+'_bigram_cnt_full_dict_tup.json', 'w') as outfile:
@@ -214,8 +228,37 @@ def runAndSaveTrump():
                   ensure_ascii=False)
     print('finished outputting trump to json');
 
+def runAndSaveObama():
+    O_unigram_cnt_dict, O_unigram_prob_dict, O_bigram_cnt_dict_tup, O_bigram_cnt_dict_nest, O_bigram_prob_dict = trainTrump()
+    print('starting to output to jsons');
+    with open('O_unigram_cnt_dict.json', 'w') as outfile:
+        json.dump(O_unigram_cnt_dict, outfile, sort_keys=True, indent=4,
+                  ensure_ascii=False)
+
+    with open('O_unigram_prob_dict.json', 'w') as outfile:
+        json.dump(O_unigram_prob_dict, outfile, sort_keys=True, indent=4,
+                  ensure_ascii=False)
+
+    with open('O_bigram_cnt_dict_tup.json', 'w') as outfile:
+        json.dump(O_bigram_cnt_dict_tup, outfile, sort_keys=True, indent=4,
+                  ensure_ascii=False)
+
+    with open('O_bigram_cnt_dict_nest.json', 'w') as outfile:
+        json.dump(O_bigram_cnt_dict_nest, outfile, sort_keys=True, indent=4,
+                  ensure_ascii=False)
+
+    with open('O_bigram_cnt_dict_nest.json', 'w') as outfile:
+        json.dump(O_bigram_cnt_dict_nest, outfile, sort_keys=True, indent=4,
+                  ensure_ascii=False)
+
+    with open('O_bigram_prob_dict.json', 'w') as outfile:
+        json.dump(O_bigram_prob_dict, outfile, sort_keys=True, indent=4,
+                  ensure_ascii=False)
+    print('finished outputting obama to json');
+
 if __name__ == '__main__':
-    #runAndSaveTrump()
+    runAndSaveTrump()
+    runAndSaveObama()
     saveFullDictsTrump()
     saveFullDictsObama()
 
