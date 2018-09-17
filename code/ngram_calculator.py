@@ -193,12 +193,12 @@ def saveFullDicts(TorO):
     doc_lst = getSpeeches('../Assignment1_resources/train/'+f_name)
     unigram_cnt_dict = _unigram_cnt_dict(doc_lst)
     print('generating bigram full'+f_name);
-    bigram_cnt_full_dict_tup, bigram_cnt_full_dict_nest = _bigram_cnt_full_dict(doc_lst, unigram_cnt_dict)
+    bigram_cnt_full_dict_tup = _bigram_cnt_full_dict(doc_lst, unigram_cnt_dict)
     print('starting write');
     with open(TorO+'_bigram_cnt_full_dict_tup.json', 'w') as outfile:
         json.dump(bigram_cnt_full_dict_tup, outfile, sort_keys=True, indent=4,
                   ensure_ascii=False)
-    print('finished writing full Trump dict')
+    print('finished writing full'+ TorO +'dict')
 
 def runAndSaveTrump():
     T_unigram_cnt_dict, T_unigram_prob_dict, T_bigram_cnt_dict_tup, T_bigram_cnt_dict_nest, T_bigram_prob_dict = trainTrump()
@@ -257,8 +257,8 @@ def runAndSaveObama():
     print('finished outputting obama to json');
 
 if __name__ == '__main__':
-    runAndSaveTrump()
-    runAndSaveObama()
+    #runAndSaveTrump()
+    #runAndSaveObama()
     saveFullDictsTrump()
     saveFullDictsObama()
 
