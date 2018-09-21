@@ -13,6 +13,8 @@ def fromUnigram(unigram):
 
     while genWord != '.' and count < 20:
         genWord = np.random.choice(words,1,prob)
+        while genWord != '<unk>':
+            genWord = np.random.choice(words,1,prob)
         count += 1
         if(genWord == '.'):
             sentance+=("\b"+genWord[0])
@@ -42,6 +44,8 @@ def fromBigramSeed(seed,bigram,unigram):
         if(words == []):
             return  sentance + "."
         genWord = np.random.choice(words,1,prob)
+        while genWord != '<unk>':
+            genWord = np.random.choice(words,1,prob)
         lastWord = genWord[0]
         if(genWord == '.'):
             sentance+=("\b"+genWord[0])
