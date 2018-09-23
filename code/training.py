@@ -45,9 +45,9 @@ def cleanText(tokens):
     #unwanted = ["--", ",", "``", "“", "”"] 
     unwanted = ["``", "“", "”", "''"] #with commas and dashes
     tokens = [word for word in tokens if word not in unwanted]
-
-    for (i, word) in enumerate(tokens):
-        tokens[i]=(word.replace("'", ''))
+    #
+    # for (i, word) in enumerate(tokens):
+    #     tokens[i]=(word.replace("'", ''))
 
     #combine conjoined words
     i = 0

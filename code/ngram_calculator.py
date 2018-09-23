@@ -17,14 +17,14 @@ def _unigram_cnt_dict(doc_lst):
     #change any string appearing less than once to a '<unk>'
     d_w_Unknowns = {'<unk>':0};
     for key in d:
-        if d[key]>=30:
+        if d[key]>=3:
             d_w_Unknowns[key]=d[key]
         else:
             d_w_Unknowns['<unk>']+=1
     return d_w_Unknowns
 
 """calulate bigram counts
-any token appearing less then once is treated as an <unk>"""
+any token appearing less then twice is treated as an <unk>"""
 def _bigram_cnt_dict(doc_lst, unigram_cnt_dict):
     #assumes all tokens are relavent
     dTup = {};
@@ -276,6 +276,5 @@ if __name__ == '__main__':
     runAndSaveObama()
     saveFullDictsTrump()
     saveFullDictsObama()
-    print('finished outputing to jsons');
 
 

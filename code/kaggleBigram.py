@@ -5,9 +5,8 @@ import nltk
 from math import log
 from numpy import argmax
 
-#https://realpython.com/python-csv/#writing-csv-file-from-a-dictionary-with-csv
-#https://realpython.com/python-csv/#writing-csv-files-with-csv
 
+#runs the classifier with different settings for the <unk> classifier to find the optimal value
 def validation(O_bigram_prob_dict_smooth,T_bigram_prob_dict_smooth):
     T_token_lst_lst = []
     T_val_file = open('../Assignment1_resources/development/trump.txt', 'rt')
@@ -28,7 +27,7 @@ def validation(O_bigram_prob_dict_smooth,T_bigram_prob_dict_smooth):
         O_token_lst_lst.append(O_tokens)
 
     best_acc = 0
-    hyperList = [.001,.01,.1,3,.5,.9]
+    hyperList = [.001,.01,.1,.5,2,5,10,100,1000,10000,100000, 1000000, 10000000, 100000000, 1000000000, 10000000000, 100000000000, 100000000000, 10000000000000, 100000000000000, 1000000000000000,10000000000000000,10000000000000000000,100000000000000000000, 1000000000000000000000, 10000000000000000000000, 100000000000000000000000,1000000000000000000000000]
 
     for hyper in hyperList:
         print ('now validating:', hyper)
@@ -36,7 +35,8 @@ def validation(O_bigram_prob_dict_smooth,T_bigram_prob_dict_smooth):
         T_cor, T_incor = testHyperparameter(T_token_lst_lst, hyper, 1, O_bigram_prob_dict_smooth, T_bigram_prob_dict_smooth)
         tot_cor = O_cor+T_cor
         tot_incor = O_incor+T_incor
-        acc = tot_cor/tot_cor+tot_incor
+        acc = tot_cor/(tot_cor+tot_incor)
+        print('hyper:', hyper, 'acc=', acc)
         if acc > best_acc:
             best_acc = acc
             best_hyper = hyper
@@ -53,7 +53,10 @@ def testHyperparameter(token_lst_lst, unkWeight, correctAnswer, O_bigram_prob_di
         for i in range (len(token_lst)-1): #iterate through each token
             t1,t2 = token_lst[i],token_lst[i+1]
             O_prob,T_prob = getProbOandT(t1, t2, unkWeight, O_bigram_prob_dict_smooth, T_bigram_prob_dict_smooth)
-
+            if O_prob == 0:
+                O_prob = .001
+            if T_prob == 0:
+                T_prob = .001
             O_neg_log_pagraph_prob += log(O_prob)
             T_neg_log_pagraph_prob += log(T_prob)
             #classification happens here
@@ -70,7 +73,6 @@ def getProbOandT(t1,t2, unkWeight,O_bigram_prob_dict_smooth,T_bigram_prob_dict_s
     if bi in O_bigram_prob_dict_smooth:
         O_prob = O_bigram_prob_dict_smooth[bi]
     else:
-        # first is unknown #TODO make this more robust
         O_prob = unkWeight
         # if str(('<unk>',t2)) in T_bigram_prob_dict_smooth:
         #     O_prob = T_bigram_prob_dict_smooth[str(('<unk>',t2))]*f_unk_hyp
@@ -79,7 +81,6 @@ def getProbOandT(t1,t2, unkWeight,O_bigram_prob_dict_smooth,T_bigram_prob_dict_s
     if bi in T_bigram_prob_dict_smooth:
         T_prob = T_bigram_prob_dict_smooth[bi]
     else:
-        #first is unknown #TODO make this more robust
         T_prob = unkWeight
         # if str(('<unk>',t2)) in T_bigram_prob_dict_smooth:
         #     T_prob = T_bigram_prob_dict_smooth[str(('<unk>',t2))]*f_unk_hyp
@@ -97,7 +98,10 @@ def classify(tokens,  unkWeight, O_bigram_prob_dict_smooth,T_bigram_prob_dict_sm
         t2 = tokens[i+1]
         O_prob,T_prob = getProbOandT(t1,t2, unkWeight, O_bigram_prob_dict_smooth,T_bigram_prob_dict_smooth)
 
-        print('O_prob,T_prob =', O_prob,T_prob,)
+        if O_prob == 0:
+            O_prob = .001
+        if T_prob == 0:
+            T_prob = .001
         O_neg_log_pagraph_prob += log(O_prob)
         T_neg_log_pagraph_prob += log(T_prob)
         #classification happens here
@@ -111,7 +115,6 @@ def cleanText(tokens):
     unwanted = ["``", "“", "”"] #with commas and dashes
     tokens = [word for word in tokens if word not in unwanted]
 
-    #combine conjoined words
     i = 0
     result = []
     while i < len(tokens)-3:
@@ -130,97 +133,42 @@ def cleanText(tokens):
     result += tokens[-3:]
     return result
 
-def output(hyper,overide):
-
+#output actual predictions of the test set as a csv
+def output(hyper, unsmoothed):
+    split = ''
     pred_lst = []
-    if overide:
+    #testFile =
+    if not unsmoothed:
         print('reading in Obama bi prob dict')
         with open('O_bigram_prob_dict_tup_smooth.json', 'r') as f:
-            O_bigram_prob_dict_smooth = json.load(f)
+            O_bigram_prob_dict = json.load(f)
         print('reading in Trump bi prob dict')
         with open('T_bigram_prob_dict_tup_smooth.json', 'r') as f:
-            T_bigram_prob_dict_smooth = json.load(f)
+            T_bigram_prob_dict = json.load(f)
         print('Done reading in prob dicts')
 
-        testFile = open('../Assignment1_resources/test/test.txt','rt')
-        raw = testFile.read()
-        split = raw.split("\n")
+
     else:
-        T_fakeDict = {
-            "('and', 'we')": 0.6,
-            "('<unk>', '<unk>')": 0.5,
-            "('and', '<unk>')": 0.4,
-            "('<unk>', 'and')": 0.3,
-            "('on', 'television')": 0.2,
-            "('best', 'person')": 0.2,
-        }
-        T_bigram_prob_dict_smooth =  T_fakeDict
-        O_fakeDict = {
-            "('and', 'we')": 0.2,
-            "('<unk>', '<unk>')": 0.1,
-            "('and', '<unk>')": 0.3,
-            "('<unk>', 'and')": 0.4,
-            "('on', 'television')": 0.8,
-            "('best', 'person')": 0.9,
-        }
-        O_bigram_prob_dict_smooth =  O_fakeDict
+        with open('O_bigram_prob_dict.json', 'r') as f:
+            O_bigram_prob_dict = json.load(f)
+        print('reading in Trump bi prob dict')
+        with open('T_bigram_prob_dict.json', 'r') as f:
+            T_bigram_prob_dict = json.load(f)
+        print('Done reading in prob dicts')
 
-
-        split = ['and we don get reimbursement. we lose \
-on    everything. we \
-lose    on    everything. so, we re    going \
- to negotiate and renegotiate trade deals, military \
-deals, many     other \
-deals    that  s going \
-to    get the costs \
-down    for running our country very significantly. i m not showing a big number in that.but i believe that if i become president, those numbers are going to be massive.',
-    'no, they all    agree.they \
-all    agree.they \
-just    didnt \
-want    to \
-go    through \
-the    unfair \
-questions    because \
-they    weren t \
-questions; \
-they    were \
-statements. you \
-see they    were \
-asking they were \
-giving    statements in a\
-    sarcastic, disgusting\
-    way.    and a\
-    woman    was\
-    on    television\
-    this    morning, and she\
-    said,  you    know, mr.trump, and she\
-    was    telling\
-    other    people, and i\
-    actually    called\
-    her, and she\
-    said,  you    know, mr.trump, i\
-    always    was\
-    against    guns.',    'fords\
-    leaving. theyre    closing\
-    plants    all\
-    over    michigan\
-    to    build\
-    a    plant in in mexico.how\
-    the    hell\
-    does    that\
-    help    us ? ok.who \
-    are    the people\
-    that     think    this is a good    thing    for us ? and in the meantime, in michigan and other places, we have plants closing all over the place and they re spending — think about a $ 2.5 billion — then they ’ re going to sell cars, trucks and parts into the united states, no tax, no nothing.\
-    if you want to become a citizen of mexico, you could take the best person in this room, the most qualified, you ’ re not going to do it.they don ’ t do that.']
-
-    for i,paragraph in enumerate(split):
-        tokens = nltk.word_tokenize(paragraph)
-        tokens = cleanText(tokens)
-        #classify the tokens
-        pred = classify(tokens, hyper,O_bigram_prob_dict_smooth, T_bigram_prob_dict_smooth)
-        pred_lst.append((i,pred))
-        #append to a list
-    #testFile.close()
+    testFile = open('../Assignment1_resources/test/test.txt','rt')
+    raw = testFile.read()
+    split = raw.split("\n")
+    for i, paragraph in enumerate(split):
+        if i!= len(split)-1:
+            tokens = nltk.word_tokenize(paragraph)
+            tokens = cleanText(tokens)
+            print(i, tokens)
+            #classify the tokens
+            pred = classify(tokens, hyper, O_bigram_prob_dict, T_bigram_prob_dict)
+            pred_lst.append((i,pred))
+            #append to a list
+    testFile.close()
 
     print ('finished generating predictions')
     print('preds:', pred_lst)
@@ -232,38 +180,27 @@ giving    statements in a\
         for (i,pred) in pred_lst:
             writer.writerow([i, pred])
 
-def findOptimalHyperParams():
-    print('reading in Obama bi prob dict')
-    with open('O_bigram_prob_dict_tup_smooth.json', 'r') as f:
-        O_bigram_prob_dict_smooth = json.load(f)
-    print('reading in Trump bi prob dict')
-    with open('T_bigram_prob_dict_tup_smooth.json', 'r') as f:
-        T_bigram_prob_dict_smooth = json.load(f)
-    print('Done reading in prob dicts')
+def findOptimalHyperParams(unsmoothed):
+    if not unsmoothed:
+        print('reading in Obama bi prob dict')
+        with open('O_bigram_prob_dict_tup_smooth.json', 'r') as f:
+            O_bigram_prob_dict = json.load(f)
+        print('reading in Trump bi prob dict')
+        with open('T_bigram_prob_dict_tup_smooth.json', 'r') as f:
+            T_bigram_prob_dict = json.load(f)
+        print('Done reading in prob dicts')
 
-    # fakeDict = {
-    # "('opinion', 'learned')": 0.0017231682815846332,
-    # "('opinion', 'learning')": 0.0017231682815846332,
-    # "('opinion', 'least')": 0.0017231682815846332,
-    # "('opinion', 'leave')": 0.0017231682815846332,
-    # "('opinion', 'leaves')": 0.0017231682815846332,
-    # "('opinion', 'leaving')": 0.0017231682815846332,
-    # "('opinion', 'lebanon')": 0.0017231682815846332,
-    # "('opinion', 'led')": 0.0017231682815846332,
-    # "('opinion', 'left')": 0.0017231682815846332,
-    # "('opinion', 'legacy')": 0.0017231682815846332,
-    # "('opinion', 'legal')": 0.0017231682815846332,
-    # "('opinion', 'legally')": 0.0017231682815846332,
-    # "('opinion', 'legendary')": 0.0017231682815846332,
-    # "('opinion', 'lesbian')": 0.0017231682815846332,
-    # "('opinion', 'less')": 0.0017231682815846332,
-    # "('opinion', 'let')": 0.0017231682815846332,
-    # "('opinion', 'letter')": 0.0017231682815846332,
-    # }
 
-    #bestHyper = validation(fakeDict, fakeDict)
+    else:
+        print('reading in obama unsmoothed prob dict')
+        with open('O_bigram_prob_dict.json', 'r') as f:
+            O_bigram_prob_dict = json.load(f)
+        print('reading in Trump bi prob dict')
+        with open('T_bigram_prob_dict.json', 'r') as f:
+            T_bigram_prob_dict = json.load(f)
+        print('Done reading in prob dicts')
 
-    bestHypers = validation(O_bigram_prob_dict_smooth, T_bigram_prob_dict_smooth)
+    bestHypers = validation(O_bigram_prob_dict, T_bigram_prob_dict)
     print ('bestHyper', bestHypers)
     optimal_hyper_params = bestHypers
     with open('optimal_hyper_params.json', 'w') as outfile:
@@ -273,6 +210,9 @@ def findOptimalHyperParams():
 
 
 if __name__ == "__main__":
-    #findOptimalHyperParams()
-    hyper = .01
-    output(hyper, True)
+    findOptimalHyperParams(unsmoothed=True)
+    with open('optimal_hyper_params.json', 'r') as f:
+        optimal_hyper_params_arr = json.load(f)
+        hyper = optimal_hyper_params_arr[0]
+    #hyper = 100000000000000000000000
+    output(hyper, unsmoothed=True)

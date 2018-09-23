@@ -1,6 +1,7 @@
 import operator
 import json
 import numpy as np
+from ngram_calculator import *
 def gtSmoothing(bigramCount):
     
     keysList = list(bigramCount)
@@ -105,15 +106,6 @@ def compute_smooth_bigram_prob_dict(uni_Count, bi_cnt_dict_smooth):
         i+=1
         print('i=', i)
         for t2 in uni_Count:
-            print((t1))
-            print (len(t1))
-            print (str(t1))
-            print(len(str(t1)))
-            print(len(str((t1, t2))))
-            print((str((str(t1), str(t2)))))
-            print(len(str((str(t1), str(t2)))))
-
-
             #totTokBiCnt = number of occurences of bigrams starting with that token
             totTokBiCnt += bi_cnt_dict_smooth[str((t1,t2))]
         for t2 in uni_Count:
@@ -156,5 +148,9 @@ def compute_and_write_smooth_bigram_prob_dict():
     print('finished writing trump')
 
 if __name__ == "__main__":
+    #runAndSaveTrump()
+    #runAndSaveObama()
+    #saveFullDictsTrump()
+    #saveFullDictsObama()
     smoothCounts()
     compute_and_write_smooth_bigram_prob_dict()
