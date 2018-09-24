@@ -1,0 +1,8 @@
+
+Given: eating ate flying Model Predicted: flew True
+Given: eating ate hiding Model Predicted: knew False
+Given: eating ate going Model Predicted: went True
+Given: easy easiest dark Model Predicted: darkest True
+Given: easy easiest fast Model Predicted: fastest True
+Given: easy easiest slow Model Predicted: slower False
+Score: 4/6
